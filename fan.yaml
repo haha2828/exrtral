@@ -38,54 +38,6 @@ mode: rule
 proxies:
     - alterId: 0
       cipher: auto
-      name: 大量节点超时请「更新订阅」
-      network: ws
-      port: "32520"
-      server: 90f3053d-1618-461d-bd39-3b9de8150ca3.bntennode.com
-      type: vmess
-      udp: true
-      uuid: d9810a6a-f929-4490-a82f-98b48cf6f593
-      ws-headers:
-        Host: pull-flv-t96-admin.douyincdn.com
-      ws-opts:
-        Path: /7cb8dd947ea9d4ddcd8afb41f5c8cdaf
-        headers:
-            Host: pull-flv-t96-admin.douyincdn.com
-      ws-path: /7cb8dd947ea9d4ddcd8afb41f5c8cdaf
-    - alterId: 0
-      cipher: auto
-      name: 更新需要在官网「激活订阅」
-      network: ws
-      port: "32520"
-      server: 90f3053d-1618-461d-bd39-3b9de8150ca3.bntennode.com
-      type: vmess
-      udp: true
-      uuid: d9810a6a-f929-4490-a82f-98b48cf6f593
-      ws-headers:
-        Host: pull-flv-t96-admin.douyincdn.com
-      ws-opts:
-        Path: /7cb8dd947ea9d4ddcd8afb41f5c8cdaf
-        headers:
-            Host: pull-flv-t96-admin.douyincdn.com
-      ws-path: /7cb8dd947ea9d4ddcd8afb41f5c8cdaf
-    - alterId: 0
-      cipher: auto
-      name: 禁止使用「订阅托管 / 转换」
-      network: ws
-      port: "32520"
-      server: 90f3053d-1618-461d-bd39-3b9de8150ca3.bntennode.com
-      type: vmess
-      udp: true
-      uuid: d9810a6a-f929-4490-a82f-98b48cf6f593
-      ws-headers:
-        Host: pull-flv-t96-admin.douyincdn.com
-      ws-opts:
-        Path: /7cb8dd947ea9d4ddcd8afb41f5c8cdaf
-        headers:
-            Host: pull-flv-t96-admin.douyincdn.com
-      ws-path: /7cb8dd947ea9d4ddcd8afb41f5c8cdaf
-    - alterId: 0
-      cipher: auto
       name: "\U0001F1ED\U0001F1F0 香港-实验线路 BGP"
       network: ws
       port: "32521"
@@ -574,11 +526,12 @@ proxies:
 proxy-groups:
     - name: Bitz Net
       proxies:
+        - HK 香港
+        - SG 新加坡
+        - JP 日本
+        - US 美国
         - 自动选择
         - 故障转移
-        - 大量节点超时请「更新订阅」
-        - 更新需要在官网「激活订阅」
-        - 禁止使用「订阅托管 / 转换」
         - "\U0001F1ED\U0001F1F0 香港-实验线路 BGP"
         - "\U0001F1ED\U0001F1F0 香港-广东专线 BGP 1"
         - "\U0001F1ED\U0001F1F0 香港-广东专线 BGP 2"
@@ -629,6 +582,39 @@ proxy-groups:
         - "\U0001F1F8\U0001F1E6 沙特-广东专线 STC"
         - "\U0001F1E6\U0001F1F6 南极-广东专线 WARP"
       type: select
+    - name: 兜底流量
+      type: select
+      proxies:
+        - Bitz Net
+        - DIRECT
+    - name: HK 香港
+      type: url-test
+      interval: 200
+      lazy: true
+      url: 'https://www.google.com/generate_204'
+      include-all: true
+      filter: '^(?=.*(?i)(港|🇭🇰|HK|Hong|HKG))(?!.*(排除1|排除2|5x)).*$'
+    - name: SG 新加坡
+      type: url-test
+      interval: 200
+      lazy: true
+      url: 'https://www.google.com/generate_204'
+      include-all: true
+      filter: '^(?=.*(?i)(坡|🇸🇬|SG|Sing|SIN|XSP))(?!.*(排除1|排除2|5x)).*$'
+    - name: JP 日本
+      type: url-test
+      interval: 200
+      lazy: true
+      url: 'https://www.google.com/generate_204'
+      include-all: true
+      filter: '^(?=.*(?i)(日|🇯🇵|JP|Japan|NRT|HND|KIX|CTS|FUK))(?!.*(排除1|排除2|5x)).*$'
+    - name: US 美国
+      type: url-test
+      interval: 200
+      lazy: true
+      url: 'https://www.google.com/generate_204'
+      include-all: true
+      filter: '^(?=.*(?i)(美|🇺🇸|US|USA|SJC|JFK|LAX|ORD|ATL|DFW|SFO|MIA|SEA|IAD))(?!.*(排除1|排除2|5x)).*$'
     - interval: 86400
       name: 自动选择
       proxies:
@@ -711,7 +697,7 @@ rules:
   - RULE-SET,NetflixIP,Bitz Net,no-resolve
   - RULE-SET,ProxyIP,Bitz Net,no-resolve
   - RULE-SET,ChinaIP,DIRECT,no-resolve
-  - MATCH,Bitz Net
+  - MATCH,兜底流量
 rule-providers: 
   Private:        {type: http, behavior: domain, format: mrs, interval: 86400, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Private.mrs}
   Direct:         {type: http, behavior: domain, format: mrs, interval: 86400, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Direct.mrs}
